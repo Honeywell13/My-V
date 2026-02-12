@@ -18,23 +18,22 @@
             overflow: hidden;
             text-align: center;
         }
-        .container { padding: 20px; z-index: 1; }
-        h1 { color: #d32f2f; font-size: 2.5rem; transition: 0.3s; margin-bottom: 10px; }
-        .gif_container img { width: 230px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .buttons { display: flex; align-items: center; justify-content: center; gap: 20px; min-height: 250px; position: relative; width: 100%; }
+        .container { padding: 20px; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        h1 { color: #d32f2f; font-size: 2.5rem; z-index: 2; margin-top: 20px; }
+        .gif_container { height: 250px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .gif_container img { width: 230px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .buttons { display: flex; align-items: center; justify-content: center; gap: 30px; width: 100%; height: 150px; position: relative; }
         button {
             padding: 15px 30px;
             font-size: 1.2rem;
             cursor: pointer;
             border-radius: 10px;
             border: none;
-            transition: all 0.2s ease-in-out;
+            transition: transform 0.2s ease-in-out;
         }
-        #yesButton { background-color: #4caf50; color: white; position: relative; z-index: 100; }
-        #noButton { background-color: #f44336; color: white; position: absolute; z-index: 10; }
-        
-        /* Ensures the music name/controls are totally invisible */
-        #bgMusic { display: none; visibility: hidden; }
+        #yesButton { background-color: #4caf50; color: white; z-index: 10; }
+        #noButton { background-color: #f44336; color: white; z-index: 5; position: relative; }
+        #bgMusic { display: none; }
     </style>
 </head>
 <body>
@@ -45,10 +44,10 @@
 
     <div class="container" id="mainContainer">
         <div class="gif_container">
-            <img id="displayImage" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eHByZzZueGZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/c76IJLufpN78i5EJa2/giphy.gif" alt="Cute bear">
+            <img id="displayImage" src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eHByZzZueGZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/c76IJLufpN78i5EJa2/giphy.gif" alt="Cute bear">
         </div>
         <h1 id="question">Imani Smith, will you be my Valentine? ❤️</h1>
-        <div class="buttons">
+        <div class="buttons" id="buttonArea">
             <button id="yesButton" onclick="handleYes()">Yes!</button>
             <button id="noButton" onclick="handleNo()">No</button>
         </div>
@@ -59,37 +58,34 @@
         let yesSize = 1;
         const music = document.getElementById('bgMusic');
 
-        // Sad images that actually work
+        // Reliable backup images
         const images = [
-            "https://media.giphy.com/media/7SF5scGB2AFrO/giphy.gif",
-            "https://media.giphy.com/media/BEob5zF564BnE4Uy6G/giphy.gif",
-            "https://media.giphy.com/media/qscdhMc5LoF8c/giphy.gif",
-            "https://media.giphy.com/media/ro08ZmQ1MeqZ2/giphy.gif"
+            "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjZicXpxbmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/OPU6wzx8JBaK6SgSNA/giphy.gif",
+            "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjZicXpxbmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/7SF5scGB2AFrO/giphy.gif",
+            "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjZicXpxbmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/BEob5zF564BnE4Uy6G/giphy.gif"
         ];
 
-        const messages = ["No", "Are you sure, Imani?", "Pleease?? 🥺", "Don't do this...", "I'm crying now...", "Look at the green button!"];
-
         function startMusic() {
-            // This plays the music without showing any player or title
-            music.play().catch(e => console.log("Music waiting for interaction"));
+            music.play().catch(() => console.log("User interaction needed"));
         }
 
         function handleNo() {
-            startMusic(); // Starts WGFT as soon as she interacts
+            startMusic();
             noCount++;
             
+            // Change image
             const imgIndex = Math.min(noCount - 1, images.length - 1);
             document.getElementById('displayImage').src = images[imgIndex];
             
-            const msgIndex = Math.min(noCount, messages.length - 1);
-            document.getElementById('noButton').innerText = messages[msgIndex];
-
+            // Make Yes bigger
             yesSize += 0.5;
             document.getElementById('yesButton').style.transform = `scale(${yesSize})`;
             
+            // Move the No button
             const btn = document.getElementById('noButton');
-            const x = Math.random() * (window.innerWidth - btn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - btn.offsetHeight);
+            btn.style.position = 'absolute';
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 100);
             btn.style.left = x + 'px';
             btn.style.top = y + 'px';
         }
@@ -97,18 +93,20 @@
         function handleYes() {
             startMusic();
             
-            // Real code-based fireworks (no image needed, they are generated)
-            const end = Date.now() + (5 * 1000);
+            // Fireworks
+            const duration = 5 * 1000;
+            const animationEnd = Date.now() + duration;
             (function frame() {
-              confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff0000', '#ff69b4'] });
-              confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff0000', '#ff69b4'] });
-              if (Date.now() < end) requestAnimationFrame(frame);
+              confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff0000', '#ffffff'] });
+              confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff0000', '#ffffff'] });
+              if (Date.now() < animationEnd) requestAnimationFrame(frame);
             }());
 
-            // Final Happy Screen
             document.getElementById('mainContainer').innerHTML = `
                 <h1 style="color:#d32f2f;">IMANI SAID YES! 🥰</h1>
-                <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjZicXpxbmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/vPFgvC0r757mR0XnQW/giphy.gif" style="width:300px; border-radius:15px;">
+                <div class="gif_container">
+                    <img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjZicXpxbmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3bmZ3JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/vPFgvC0r757mR0XnQW/giphy.gif">
+                </div>
             `;
         }
     </script>
